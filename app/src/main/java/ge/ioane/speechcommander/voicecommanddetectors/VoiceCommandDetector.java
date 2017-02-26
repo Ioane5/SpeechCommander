@@ -31,6 +31,7 @@ public class VoiceCommandDetector implements SpeechListener.SpeechCallback, Voic
     }
 
     private void activateNativeSpeechRecognition() {
+        Log.d(TAG, "activateNativeSpeechRecognition() called");
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, mContext.getPackageName());
@@ -48,13 +49,20 @@ public class VoiceCommandDetector implements SpeechListener.SpeechCallback, Voic
     @Override
     public void onKeywordDetected() {
         Log.d(TAG, "onKeywordDetected() called");
-        activateNativeSpeechRecognition();
         mActivator.stopListening();
+        activateNativeSpeechRecognition();
+    }
+
+    @Override
+    public void onNoCommand() {
+        Log.d(TAG, "onNoCommand");
+        // mSpeechRecognizer.stopListening();
+        mActivator.startListening();
     }
 
     public void onDestroy() {
         mSpeechRecognizer.destroy();
-        // TODO add destroy handling
+        mActivator.onDestroy();
     }
 
     /**

@@ -71,6 +71,7 @@ class SpeechListener implements RecognitionListener {
     @Override
     public void onError(int error) {
         Log.d(TAG, "onError() called with: error = [" + error + "]");
+        mListener.onNoCommand();
     }
 
     /**
@@ -112,5 +113,6 @@ class SpeechListener implements RecognitionListener {
     interface SpeechCallback {
         // TODO might change to support multiple data
         void onSpeechFinished(String result);
+        void onNoCommand();
     }
 }

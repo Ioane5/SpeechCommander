@@ -39,7 +39,7 @@ class VoiceDetectorActivator {
 
     void stopListening() {
         Log.d(TAG, "stopListening() called");
-        mRecognizer.stop();
+        mRecognizer.cancel();
     }
 
     void startListening() {
@@ -115,7 +115,7 @@ class VoiceDetectorActivator {
         public void onEndOfSpeech() {
             Log.d(TAG, "onEndOfSpeech() called " + mRecognizer.getSearchName());
             if (!mRecognizer.getSearchName().equals(KWS_SEARCH)) {
-                stopListening();
+                mRecognizer.stop();
                 startListening();
             }
         }
@@ -126,9 +126,9 @@ class VoiceDetectorActivator {
             if (hypothesis == null)
                 return;
             Log.d(TAG, "onPartialResult: hypothesis " + hypothesis.getHypstr());
-//            // It's important to reset
-//            stopListening();
-//            startListening();
+            if (TextUtils.equals(hypothesis.getHypstr(), mKeyphrase)) {
+                mRecognizer.stop();
+            }
         }
 
         @Override
@@ -136,8 +136,7 @@ class VoiceDetectorActivator {
             Log.d(TAG, "onResult() called with: hypothesis = [" + hypothesis + "]");
             if (hypothesis != null && TextUtils.equals(hypothesis.getHypstr(), mKeyphrase)) {
                 mKeywordListener.onKeywordDetected();
-                stopListening();
-                startListening();
+                mRecognizer.stop();
             }
         }
 
